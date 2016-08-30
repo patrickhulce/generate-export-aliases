@@ -1,0 +1,8 @@
+{
+  "config": {
+    "exportAliases": {
+      "myFile": "./lib/fileA.js",
+      "other": "lib/other.js"
+    }
+  }
+}
