@@ -38,10 +38,11 @@ defineTest('aliases.js', function (aliasUtils) {
     });
 
     it('should point the alias to the source file', function () {
-      return aliasUtils(app3Dir).createAlias('./my/source/file.js', 'alias').then(function () {
+      return aliasUtils(app3Dir).createAlias('./file.js', 'alias').then(function () {
         return Promise.try(function () {
-          var contents = fs.readFileSync(app3Dir + '/alias.js', 'utf8');
-          contents.should.eql('module.exports = require("./my/source/file.js");\n');
+          var original = require(app3Dir + '/file.js');
+          var aliased = require(app3Dir + '/alias.js');
+          original.should.equal(aliased);
           fs.unlinkSync(app3Dir + '/alias.js');
         });
       });

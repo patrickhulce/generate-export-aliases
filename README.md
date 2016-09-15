@@ -6,3 +6,53 @@
 [![Dependencies](https://david-dm.org/patrickhulce/generate-export-aliases.svg)](https://david-dm.org/patrickhulce/generate-export-aliases)
 
 Generates additional files to make requiring files deep in your node module easy and safe from refactoring.
+
+
+## Usage
+
+Save `generate-export-aliases` as a dev dependency in your `package.json`.
+```sh
+npm install --save-dev generate-export-aliases
+```
+
+Add a prepublish hook and the exports you wish to alias to the `config` section of your `package.json` under `exportAliases`.
+For example, if you wanted to alias the `myHelper.js` file in the following directory structure...
+
+#### Example Folder Structure
+```
+├── LICENSE
+├── README.md
+├── package.json
+├── lib
+│   ├── fileA.js
+│   ├── fileB.js
+│   ├── fileC.js
+│   └── shared
+│       ├── myHelper.js
+│       └── otherHelper.js
+```
+
+#### `package.json`
+```json
+{
+  "name": "my-fantastic-library",
+  "scripts": {
+    "prepublish": "./node_modules/.bin/generate-export-aliases"
+  },
+  "config": {
+    "exportAliases": {
+      "exposed-helper": "./lib/shared/myHelper.js"
+    }
+  }
+}
+```
+
+#### Requiring Your Alias
+```js
+var exposedHelper = require('my-fantastic-library/exposed-helper');
+var exposedHelperOriginal = require('my-fantastic-library/lib/shared/myHelper.js');
+exposedHelper === exposedHelperOriginal // true
+```
+
+## Inspiration
+[lodash](https://github.com/lodash/lodash)'s build process
