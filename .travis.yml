@@ -12,7 +12,7 @@ node_js:
 before_install:
   - npm install -g coveralls
 install:
-  - yarn install --ignore-engines
+  - yarn install --ignore-engines --check-files
 script:
   - npm run test:lint
   - npm run test:coverage
