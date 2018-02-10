@@ -15,7 +15,7 @@ describe('lib/aliases.js', () => {
       return aliasUtils(app1Dir).getAliases().then(aliases => {
         aliases.should.eql([
           {alias: 'myFile', source: './lib/fileA.js'},
-          {alias: 'other', source: './lib/other.js'},
+          {alias: 'other', source: './lib/other'},
         ])
       })
     })
@@ -37,6 +37,17 @@ describe('lib/aliases.js', () => {
         return Promise.try(() => {
           fs.statSync(app3Dir + '/alias.js')
           fs.unlinkSync(app3Dir + '/alias.js')
+        })
+      })
+    })
+
+    it('should create .d.ts files when appropriate', () => {
+      return aliasUtils(app1Dir).createAlias('lib/other', 'alias').then(() => {
+        return Promise.try(() => {
+          const contents = fs.readFileSync(app1Dir + '/alias.d.ts', 'utf8')
+          contents.should.contain('export * from')
+          fs.unlinkSync(app1Dir + '/alias.js')
+          fs.unlinkSync(app1Dir + '/alias.d.ts')
         })
       })
     })

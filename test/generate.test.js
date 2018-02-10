@@ -13,7 +13,9 @@ describe('lib/generate.js', () => {
       return Promise.try(() => {
         fs.statSync(app1Dir + '/myFile.js')
         fs.statSync(app1Dir + '/other.js')
+        fs.statSync(app1Dir + '/other.d.ts')
         fs.unlinkSync(app1Dir + '/myFile.js')
+        fs.unlinkSync(app1Dir + '/other.d.ts')
         fs.unlinkSync(app1Dir + '/other.js')
       })
     })
