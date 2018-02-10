@@ -33,7 +33,7 @@ describe('lib/aliases.js', () => {
 
   describe('#createAlias', () => {
     it('should create a file in the root dir', () => {
-      return aliasUtils(app3Dir).createAlias('source', 'alias').then(() => {
+      return aliasUtils(app3Dir).createAlias('file', 'alias').then(() => {
         return Promise.try(() => {
           fs.statSync(app3Dir + '/alias.js')
           fs.unlinkSync(app3Dir + '/alias.js')
@@ -52,12 +52,16 @@ describe('lib/aliases.js', () => {
       })
     })
 
+    it('should fail for missing files', () => {
+      return (() => aliasUtils(app3Dir).createAlias('./missing', 'alias')).should.throw(/Cannot find/)
+    })
+
     it('should fail for nested aliases', () => {
-      return aliasUtils(app3Dir).createAlias('./src', 'nested/alias').should.eventually.be.rejected
+      return aliasUtils(app3Dir).createAlias('./file', 'nested/alias').should.eventually.be.rejected
     })
 
     it('should fail for wildcard aliases', () => {
-      return aliasUtils(app3Dir).createAlias('./src', 'nested/*').should.eventually.be.rejected
+      return aliasUtils(app3Dir).createAlias('./file', 'nested/*').should.eventually.be.rejected
     })
   })
 })
