@@ -1,5 +1,6 @@
 {
   "name": "generate-export-aliases",
+  "version": "0.0.0-development",
   "description": "Generates additional files to make requiring files deep in your node module easy and safe from refactoring.",
   "bin": {
     "generate-export-aliases": "./bin/generate-aliases.js"
