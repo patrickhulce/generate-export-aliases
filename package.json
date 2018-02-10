@@ -5,11 +5,11 @@
     "generate-export-aliases": "./bin/generate-aliases.js"
   },
   "scripts": {
-    "test": "lint && mocha --reporter spec --require test/bootstrap test/*.test.js test/**/*.test.js",
+    "test": "npm run test:lint && npm run test:unit",
     "test:lint": "lint",
-    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --require test/bootstrap test/*.test.js test/**/*.test.js",
-    "test:watch": "mocha --watch --reporter dot --require test/bootstrap test/*.test.js test/**/*.test.js",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "test:unit": "mocha --reporter spec test/*.test.js",
+    "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- test/*.test.js",
+    "semantic-release": "semantic-release"
   },
   "repository": {
     "type": "git",

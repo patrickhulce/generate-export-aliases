@@ -1,4 +1,6 @@
 /* eslint-disable no-path-concat */
+require('./bootstrap')
+
 const fs = require('fs')
 const Promise = require('bluebird')
 const aliasUtils = require('../lib/aliases')
