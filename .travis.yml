@@ -11,8 +11,8 @@ node_js:
   - v4
 before_install:
   - npm install -g coveralls
-before_script:
-  - npm prune
+install:
+  - yarn install --ignore-engines
 script:
   - npm run test:lint
   - npm run test:coverage
