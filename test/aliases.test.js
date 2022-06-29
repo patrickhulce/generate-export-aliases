@@ -52,6 +52,16 @@ describe('lib/aliases.js', () => {
       })
     })
 
+    it('should create an esm file when source looks like esm', () => {
+      return aliasUtils(app1Dir).createAlias('lib/fileB.esm.js', 'alias').then(() => {
+        return Promise.try(() => {
+          const contents = fs.readFileSync(app1Dir + '/alias.js', 'utf8')
+          contents.should.match(/^export \* from/)
+          fs.unlinkSync(app1Dir + '/alias.js')
+        })
+      })
+    })
+
     it('should point the alias to the source file', () => {
       return aliasUtils(app3Dir).createAlias('./file.js', 'alias').then(() => {
         return Promise.try(() => {
