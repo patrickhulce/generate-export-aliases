@@ -6,6 +6,7 @@
     "generate-export-aliases": "./bin/generate-aliases.js"
   },
   "scripts": {
+    "clean": "rm -rf test/fixtures/app1/folder test/fixtures/app1/other test/fixtures/app1/path test/fixtures/app1/*.js test/fixtures/app1/*.d.ts",
     "test": "npm run test:unit",
     "test:unit": "mocha --reporter spec test/*.test.js",
     "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- test/*.test.js",
