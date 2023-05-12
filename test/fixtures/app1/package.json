@@ -2,7 +2,9 @@
   "config": {
     "exportAliases": {
       "myFile": "./lib/fileA.js",
-      "other": "lib/other"
+      "other/": "lib/other",
+      "nested/cjs/folder/path/": "lib/fileA.js",
+      "nested/esm/folder/path": "lib/fileB.esm.js"
     }
   }
 }

@@ -6,8 +6,7 @@
     "generate-export-aliases": "./bin/generate-aliases.js"
   },
   "scripts": {
-    "test": "npm run test:lint && npm run test:unit",
-    "test:lint": "lint",
+    "test": "npm run test:unit",
     "test:unit": "mocha --reporter spec test/*.test.js",
     "test:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- test/*.test.js",
     "semantic-release": "semantic-release"

@@ -12,11 +12,19 @@ describe('lib/generate.js', () => {
     return generate(app1Dir).then(() => {
       return Promise.try(() => {
         fs.statSync(app1Dir + '/myFile.js')
-        fs.statSync(app1Dir + '/other.js')
-        fs.statSync(app1Dir + '/other.d.ts')
+        fs.statSync(app1Dir + '/other/index.js')
+        fs.statSync(app1Dir + '/other/index.d.ts')
+        fs.statSync(app1Dir + '/nested/cjs/folder/path/index.js')
+        fs.statSync(app1Dir + '/nested/esm/folder/path.js')
+
+        require(app1Dir + '/myFile.js').should.equal('Hello, World!')
+        require(app1Dir + '/nested/cjs/folder/path/index.js').should.equal('Hello, World!')
+
         fs.unlinkSync(app1Dir + '/myFile.js')
-        fs.unlinkSync(app1Dir + '/other.d.ts')
-        fs.unlinkSync(app1Dir + '/other.js')
+        fs.unlinkSync(app1Dir + '/other/index.js')
+        fs.unlinkSync(app1Dir + '/other/index.d.ts')
+        fs.unlinkSync(app1Dir + '/nested/cjs/folder/path/index.js')
+        fs.unlinkSync(app1Dir + '/nested/esm/folder/path.js')
       })
     })
   })

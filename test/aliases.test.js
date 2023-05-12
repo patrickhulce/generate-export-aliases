@@ -12,18 +12,24 @@ describe('lib/aliases.js', () => {
 
   describe('#getAliases', () => {
     it('should read the aliases from package.json config', () => {
-      return aliasUtils(app1Dir).getAliases().then(aliases => {
-        aliases.should.eql([
-          {alias: 'myFile', source: './lib/fileA.js'},
-          {alias: 'other', source: './lib/other'},
-        ])
-      })
+      return aliasUtils(app1Dir)
+        .getAliases()
+        .then(aliases => {
+          aliases.should.eql([
+            {alias: 'myFile', source: 'lib/fileA.js', isIndex: false},
+            {alias: 'other/', source: 'lib/other', isIndex: true},
+            {alias: 'nested/cjs/folder/path', source: 'lib/fileA.js', isIndex: true},
+            {alias: 'nested/esm/folder/path', source: 'lib/fileB.esm.js', isIndex: false},
+          ])
+        })
     })
 
     it('should default to no aliases', () => {
-      return aliasUtils(app2Dir + '/').getAliases().then(aliases => {
-        aliases.should.eql([])
-      })
+      return aliasUtils(app2Dir + '/')
+        .getAliases()
+        .then(aliases => {
+          aliases.should.eql([])
+        })
     })
 
     it('should fail when no package.json is found', () => {
@@ -33,52 +39,83 @@ describe('lib/aliases.js', () => {
 
   describe('#createAlias', () => {
     it('should create a file in the root dir', () => {
-      return aliasUtils(app3Dir).createAlias('file', 'alias').then(() => {
-        return Promise.try(() => {
-          fs.statSync(app3Dir + '/alias.js')
-          fs.unlinkSync(app3Dir + '/alias.js')
+      return aliasUtils(app3Dir)
+        .createAlias('file', 'alias')
+        .then(() => {
+          return Promise.try(() => {
+            fs.statSync(app3Dir + '/alias.js')
+            fs.unlinkSync(app3Dir + '/alias.js')
+          })
         })
-      })
     })
 
     it('should create .d.ts files when appropriate', () => {
-      return aliasUtils(app1Dir).createAlias('lib/other', 'alias').then(() => {
-        return Promise.try(() => {
-          const contents = fs.readFileSync(app1Dir + '/alias.d.ts', 'utf8')
-          contents.should.contain('export * from')
-          fs.unlinkSync(app1Dir + '/alias.js')
-          fs.unlinkSync(app1Dir + '/alias.d.ts')
+      return aliasUtils(app1Dir)
+        .createAlias('lib/other', 'alias')
+        .then(() => {
+          return Promise.try(() => {
+            const contents = fs.readFileSync(app1Dir + '/alias.d.ts', 'utf8')
+            contents.should.contain('export * from')
+            fs.unlinkSync(app1Dir + '/alias.js')
+            fs.unlinkSync(app1Dir + '/alias.d.ts')
+          })
         })
-      })
     })
 
     it('should create an esm file when source looks like esm', () => {
-      return aliasUtils(app1Dir).createAlias('lib/fileB.esm.js', 'alias').then(() => {
-        return Promise.try(() => {
-          const contents = fs.readFileSync(app1Dir + '/alias.js', 'utf8')
-          contents.should.match(/^export \* from/)
-          fs.unlinkSync(app1Dir + '/alias.js')
+      return aliasUtils(app1Dir)
+        .createAlias('lib/fileB.esm.js', 'alias')
+        .then(() => {
+          return Promise.try(() => {
+            const contents = fs.readFileSync(app1Dir + '/alias.js', 'utf8')
+            contents.should.match(/^export \* from ".\/lib\/fileB"/)
+            fs.unlinkSync(app1Dir + '/alias.js')
+          })
         })
-      })
+    })
+
+    it('should create an index file when alias ends in /', () => {
+      return aliasUtils(app1Dir)
+        .createAlias('lib/fileB.esm.js', 'alias')
+        .then(() => {
+          return Promise.try(() => {
+            const contents = fs.readFileSync(app1Dir + '/alias.js', 'utf8')
+            contents.should.match(/^export \* from "..\/lib\/fileB"/)
+            fs.unlinkSync(app1Dir + '/alias.js')
+          })
+        })
+    })
+
+    it('should create nested aliases', () => {
+      const expectedPath = app1Dir + '/nested/folder/alias.js'
+      return aliasUtils(app1Dir)
+        .createAlias('lib/fileB.esm.js', 'nested/folder/alias')
+        .then(() => {
+          return Promise.try(() => {
+            const contents = fs.readFileSync(expectedPath, 'utf8')
+            contents.should.match(/^export \* from "..\/..\/lib\/fileB"/)
+            fs.unlinkSync(expectedPath)
+          })
+        })
     })
 
     it('should point the alias to the source file', () => {
-      return aliasUtils(app3Dir).createAlias('./file.js', 'alias').then(() => {
-        return Promise.try(() => {
-          const original = require(app3Dir + '/file.js')
-          const aliased = require(app3Dir + '/alias.js')
-          original.should.equal(aliased)
-          fs.unlinkSync(app3Dir + '/alias.js')
+      return aliasUtils(app3Dir)
+        .createAlias('./file.js', 'alias')
+        .then(() => {
+          return Promise.try(() => {
+            const original = require(app3Dir + '/file.js')
+            const aliased = require(app3Dir + '/alias.js')
+            original.should.equal(aliased)
+            fs.unlinkSync(app3Dir + '/alias.js')
+          })
         })
-      })
     })
 
     it('should fail for missing files', () => {
-      return (() => aliasUtils(app3Dir).createAlias('./missing', 'alias')).should.throw(/Cannot find/)
-    })
-
-    it('should fail for nested aliases', () => {
-      return aliasUtils(app3Dir).createAlias('./file', 'nested/alias').should.eventually.be.rejected
+      return (() => aliasUtils(app3Dir).createAlias('./missing', 'alias')).should.throw(
+        /Cannot find/,
+      )
     })
 
     it('should fail for wildcard aliases', () => {
